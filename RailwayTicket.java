@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 class RailwayTicket {
     String name;
@@ -7,26 +9,24 @@ class RailwayTicket {
     int amt;
     int totalamt;
 
-    public static void main(String[] args) throws IOException {
-        RailwayTicket ticket = new RailwayTicket();
-        DataInputStream in = new DataInputStream(System.in);
-
+    // Method to input passenger details
+    void input(DataInputStream in) throws IOException {
         System.out.println("Enter Passenger name: ");
-        ticket.name = in.readLine();
+        name = in.readLine();
 
         System.out.println("Enter Coach (First_AC, Second_AC, Third_AC, Sleeper):");
-        ticket.coach = in.readLine();
+        coach = in.readLine();
 
         System.out.println("Enter Mobile Number: ");
-        ticket.mobno = Long.parseLong(in.readLine());
+        mobno = Long.parseLong(in.readLine());
 
         System.out.println("Enter Basic Amount: ");
-        ticket.amt = Integer.parseInt(in.readLine());
+        amt = Integer.parseInt(in.readLine());
 
-        ticket.update();
-        ticket.display();
+        update(); // Update the total amount based on the coach type
     }
 
+    // Method to update total amount based on coach type
     void update() {
         switch (coach) {
             case "First_AC":
@@ -42,14 +42,46 @@ class RailwayTicket {
                 totalamt = amt;
                 break;
             default:
-                System.out.println("Invalid coach type!");
+                System.out.println("Invalid coach type! Defaulting to Sleeper.");
+                coach = "Sleeper";
+                totalamt = amt;
         }
     }
 
+    // Method to display passenger details
     void display() {
         System.out.println("Customer Name: " + name);
         System.out.println("Coach Type: " + coach);
         System.out.println("Mobile Number: " + mobno);
-        System.out.println("Total Amount: " + totalamt);
+        System.out.println("Total Amount for this Passenger: " + totalamt);
+        System.out.println("-----------------------------");
+    }
+
+    public static void main(String[] args) throws IOException {
+        DataInputStream in = new DataInputStream(System.in);
+        List<RailwayTicket> passengers = new ArrayList<>();
+
+        System.out.println("Enter the number of passengers: ");
+        int numPassengers = Integer.parseInt(in.readLine());
+
+        int grandTotal = 0;  // To store the total amount for all passengers
+
+        // Collecting details for each passenger
+        for (int i = 0; i < numPassengers; i++) {
+            System.out.println("\nEnter details for Passenger " + (i + 1) + ":");
+            RailwayTicket ticket = new RailwayTicket();
+            ticket.input(in); // Input passenger details
+            passengers.add(ticket); // Add ticket to the list
+            grandTotal += ticket.totalamt;  // Accumulate the total amount
+        }
+
+        // Displaying details for all passengers
+        System.out.println("\nPassenger Details:");
+        for (RailwayTicket ticket : passengers) {
+            ticket.display();
+        }
+
+        // Displaying the grand total amount
+        System.out.println("Grand Total Amount for All Passengers: " + grandTotal);
     }
 }
